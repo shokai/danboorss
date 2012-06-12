@@ -46,8 +46,14 @@ end
 
 
 if $0 == __FILE__
-  Danbooru.search('happy').each do |img|
-    puts "#{img.permalink} => #{img.url}"
+  word = ARGV.empty? ? 'happy' : ARGV
+  puts "search : #{word}"
+  Danbooru.search(word).each do |img|
+    begin
+      puts "#{img.permalink} => #{img.url}"
+    rescue => e
+      STDERR.puts e
+    end
     sleep 1
   end
 end

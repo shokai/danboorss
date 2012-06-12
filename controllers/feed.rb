@@ -12,10 +12,14 @@ get '/:tags.rss' do
     rss.channel.link = Danbooru.search_url @tags
     rss.channel.description = @title
     imgs.each do |img|
-      i = rss.items.new_item
-      i.title = img.permalink
-      i.link = img.permalink
-      i.description = "<p><img src=\"#{img.url}\"></p>"
+      begin
+        i = rss.items.new_item
+        i.title = img.permalink
+        i.link = img.permalink
+        i.description = "<p><img src=\"#{img.url}\"></p>"
+      rescue => e
+        STDERR.puts e
+      end
     end
   end
   rss.to_s
