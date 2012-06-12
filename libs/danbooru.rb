@@ -61,6 +61,7 @@ module Danbooru
     end
 
     def to_json(*a)
+      url = self.url rescue url = nil
       {
         :id => id,
         :permalink => permalink,
