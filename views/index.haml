@@ -1,8 +1,13 @@
 - content_for :title do
   = @title
 
+- content_for :head do
+  :javascript
+    var app_root = "#{app_root}";
+  %script{:type => 'text/javascript', :src => "#{app_root}/js/index.js"}
+
+
 %div
-  %input{:id => 'start_btn', :type => 'button', :value => 'start'}
-%div
-  %h2 result
-  %ul#results
+  %h2 Make RSS
+  %input{:type => :text, :value => 'happy', :size => 50, :id => :tag}
+  %input{:type => :button, :value => 'go', :id => :go}
