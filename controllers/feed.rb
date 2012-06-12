@@ -2,7 +2,7 @@ before '/*.rss' do
   content_type 'application/xml'
 end
 
-get '/:tags.rss' do
+get '/tag/:tags.rss' do
   @tags = params[:tags].split(/\s/)
   @title = "danboorss #{@tags}"
   imgs = TmpCache.get(@tags.join('+')) || TmpCache.set(@tags.join('+'), Danbooru.search(@tags), 3600*4)
