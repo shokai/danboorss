@@ -56,7 +56,7 @@ if $0 == __FILE__
     begin
       puts "#{img.permalink} => #{img.url}"
     rescue => e
-      STDERR.puts e
+      STDERR.puts "#{e} (#{e.class})"
     end
     sleep 1
   end

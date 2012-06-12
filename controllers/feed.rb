@@ -18,7 +18,7 @@ get '/:tags.rss' do
         i.link = img.permalink
         i.description = "<p><img src=\"#{img.url}\"></p>"
       rescue => e
-        STDERR.puts e
+        STDERR.puts "#{e} (#{e.class})"
       end
     end
   end
