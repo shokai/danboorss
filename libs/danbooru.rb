@@ -4,8 +4,12 @@ require 'net/http'
 module Danbooru
 
   private
-  def self.get_images(html)
-    html.xpath('//a').reject{|a|
+  def self.get_images(uri)
+    res = Net::HTTP.start(uri.host, uri.port).
+      request(Net::HTTP::Get.new uri.request_uri)
+    raise Error.new, "HTTP Status #{res.code} at #{uri}" unless res.code.to_i == 200
+    doc = Nokogiri::HTML res.body
+    doc.xpath('//a').reject{|a|
       a['href'] !~ /^\/post\/show\/\d+/
     }.map{|a|
       Image.new a['href'].scan(/^\/post\/show\/(\d+)/)[0][0].to_i
@@ -15,12 +19,20 @@ module Danbooru
   public
   def self.search(*tags)
     uri = URI.parse "http://danbooru.donmai.us/post?tags=#{tags.join '+'}"    
-    res = Net::HTTP.start(uri.host, uri.port).
-      request(Net::HTTP::Get.new uri.request_uri)
-    raise Error.new, "HTTP Status #{res.code} at #{uri}" unless res.code.to_i == 200
     {
       :uri => uri,
-      :images => get_images(Nokogiri::HTML res.body)
+      :images => get_images(uri)
+    }
+  end
+
+  def self.popular(type=:day)
+    unless [:day, :week, :month].include? type
+      raise ArgumentError, "argument must be one of [:day, :week, :month]"
+    end
+    uri = URI.parse "http://danbooru.donmai.us/post/popular_by_#{type}"
+    {
+      :uri => uri,
+      :images => get_images(uri)
     }
   end
 
@@ -55,11 +67,17 @@ end
 
 
 if $0 == __FILE__
-  word = ARGV.empty? ? 'happy' : ARGV
-  puts "search : #{word}"
-  Danbooru.search(word)[:images].each do |img|
+  if ARGV.empty?
+    puts "popular by day"
+    res = Danbooru.popular :day
+  else
+    puts "search : #{ARGV}"
+    res = Danbooru.search ARGV
+  end
+
+  res[:images].each do |img|
     begin
-      puts "#{img.permalink} => #{img.url}"
+      puts "[#{img.id}] #{img.permalink} => #{img.url}"
     rescue => e
       STDERR.puts "#{e} (#{e.class})"
     end
