@@ -59,6 +59,14 @@ module Danbooru
                 tags[0]['src']
                 )
     end
+
+    def to_json(*a)
+      {
+        :id => id,
+        :permalink => permalink,
+        :url => url
+      }.to_json(*a)
+    end
   end
 
   class Error < StandardError
