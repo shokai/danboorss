@@ -36,7 +36,11 @@ module Danbooru
     end
 
     def url
-      @url ||= html.xpath('//img[@id="image"]')[0]['src']
+      @url ||= (
+                tags = html.xpath('//img[@id="image"]')
+                raise Error, 'Image URL not found' if tags.empty?
+                tags[0]['src']
+                )
     end
   end
 
