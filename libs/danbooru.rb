@@ -1,10 +1,13 @@
-#!/usr/bin/env ruby
 require 'nokogiri'
 require 'net/http'
 
 module Danbooru
+  def self.search_url(*tags)
+    URI.parse "http://danbooru.donmai.us/post?tags=#{tags.join '+'}"    
+  end
+
   def self.search(*tags)
-    uri = URI.parse "http://danbooru.donmai.us/post?tags=#{tags.join '+'}"
+    uri = search_url tags
     res = Net::HTTP.start(uri.host, uri.port).
       request(Net::HTTP::Get.new uri.request_uri)
     raise Error.new, "HTTP Status #{res.code} at #{uri}" unless res.code.to_i == 200
